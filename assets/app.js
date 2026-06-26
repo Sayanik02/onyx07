@@ -78,7 +78,7 @@ function fillSidebarGuild() {
   if (iconEl) iconEl.textContent = name.slice(0, 2).toUpperCase();
 
   const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) logoutBtn.addEventListener('click', clearGuild);
+  if (logoutBtn) logoutBtn.addEventListener('click', clearSession);
 }
 
 /* Guard — redirect to landing if no guild set */
