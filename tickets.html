@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tickets — Onyx</title>
+<link rel="icon" type="image/png" href="assets/images/onyx-logo.png">
+<link rel="stylesheet" href="assets/dashboard.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark"><img src="assets/images/onyx-logo.png" alt="Onyx" style="width:100%;height:100%;object-fit:contain;"></div>
+      <div class="logo-text">Onyx</div>
+    </div>
+    <div class="server-switcher">
+      <div class="server-icon">--</div>
+      <div class="server-info">
+        <div class="server-name">Loading…</div>
+        <div class="server-meta mono" id="guild-id-display"></div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/></svg>Overview</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Protection</div>
+      <a href="antinuke.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L17 5V10C17 14 14 17.3 10 18C6 17.3 3 14 3 10V5L10 2Z" stroke="currentColor" stroke-width="1.5"/></svg>Antinuke</a>
+      <a href="backups.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5"/></svg>Backups</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Engagement</div>
+      <a href="tickets.html" class="nav-item active"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Tickets</a>
+      <a href="welcome.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3V17M3 10H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Welcome</a>
+      <a href="autoreact.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 4 2 6-5-3-5 3 2-6-5-4h6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Auto-React</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <a href="premium.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 1.5L12.5 7L18 7.8L14 11.6L15 17.5L10 14.7L5 17.5L6 11.6L2 7.8L7.5 7L10 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Premium<span class="nav-badge premium">PRO</span></a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-avatar"></div>
+      <div class="user-info"><div class="user-name">Guild Owner</div><div class="user-tag mono">Admin</div></div>
+      <button id="logout-btn" title="Switch server" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-faint);margin-left:auto;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 5l3 3-3 3M6 8h8M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="breadcrumb"><span id="breadcrumb-server">—</span> / <span class="current">Tickets</span></div>
+      <div class="topbar-actions">
+        <div class="status-pill"><span class="status-dot" id="status-dot"></span> <span id="status-text">Loading…</span></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-title">Ticket system</div>
+        <div class="page-sub">Configure the support ticket system for your server.</div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-card-label">Open tickets</div>
+          <div class="stat-card-value" id="stat-open">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Closed this week</div>
+          <div class="stat-card-value green" id="stat-closed">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">System status</div>
+          <div class="stat-card-value" id="stat-status">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Ticket system</div>
+            <div class="card-desc">Enable or disable the ticket system for this server.</div>
+          </div>
+          <div class="toggle" id="toggle-enabled" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Configuration</div>
+            <div class="card-desc">Set up where tickets are created and who gets notified.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Ticket Category ID</label>
+          <input class="field-input" id="category-id" placeholder="Discord category ID for ticket channels">
+          <div class="field-hint">Tickets will be created as channels inside this category.</div>
+        </div>
+        <div class="field">
+          <label class="field-label">Log Channel ID</label>
+          <input class="field-input" id="log-channel" placeholder="Channel ID for ticket transcripts">
+        </div>
+        <div class="field">
+          <label class="field-label">Support Role ID</label>
+          <input class="field-input" id="support-role" placeholder="Role ID that can see all tickets">
+        </div>
+        <div class="field">
+          <label class="field-label">Opening message</label>
+          <textarea class="field-textarea" id="ticket-msg">Thank you for opening a ticket! A staff member will be with you shortly.</textarea>
+          <div class="field-hint">Sent inside the ticket when it's created.</div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="save()">Save settings</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Bot commands</div>
+            <div class="card-desc">Use these commands in your Discord server to manage the ticket panel.</div>
+          </div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Command</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="color:var(--red);">&gt;ticket setup</td><td>Post the ticket panel in a channel</td></tr>
+            <tr><td class="mono" style="color:var(--red);">&gt;ticket close</td><td>Close the current ticket</td></tr>
+            <tr><td class="mono" style="color:var(--red);">&gt;ticket transcript</td><td>Save a transcript of the ticket</td></tr>
+            <tr><td class="mono" style="color:var(--red);">&gt;ticket add @user</td><td>Add a user to the ticket</td></tr>
+            <tr><td class="mono" style="color:var(--red);">&gt;ticket remove @user</td><td>Remove a user from the ticket</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+<script>
+if (!requireGuild()) throw new Error('no guild');
+document.getElementById('guild-id-display').textContent = getGuildId();
+document.getElementById('breadcrumb-server').textContent = getGuildName();
+
+async function load() {
+  try {
+    const cfg = await api('/tickets');
+    if (cfg.enabled) document.getElementById('toggle-enabled').classList.add('on');
+    document.getElementById('category-id').value = cfg.categoryId || '';
+    document.getElementById('log-channel').value = cfg.logChannel || '';
+    document.getElementById('support-role').value = cfg.supportRole || '';
+    document.getElementById('ticket-msg').value = cfg.message || '';
+    document.getElementById('stat-open').textContent = cfg.stats.openCount;
+    document.getElementById('stat-closed').textContent = cfg.stats.closedWeek;
+    document.getElementById('stat-status').textContent = cfg.enabled ? 'Active' : 'Disabled';
+    document.getElementById('stat-status').className = 'stat-card-value ' + (cfg.enabled ? 'green' : '');
+
+    document.getElementById('status-dot').style.background = cfg.enabled ? '#3DD68C' : '#F5A623';
+    document.getElementById('status-text').textContent = cfg.enabled ? 'Ticket system active' : 'Ticket system disabled';
+  } catch(e) {
+    document.getElementById('status-text').textContent = 'Could not load';
+    document.getElementById('status-dot').style.background = '#FF6B6B';
+  }
+}
+
+async function save() {
+  try {
+    await api('/tickets', {
+      method: 'POST',
+      body: {
+        enabled: document.getElementById('toggle-enabled').classList.contains('on'),
+        categoryId: document.getElementById('category-id').value,
+        logChannel: document.getElementById('log-channel').value,
+        supportRole: document.getElementById('support-role').value,
+        message: document.getElementById('ticket-msg').value,
+      }
+    });
+    toast('Ticket settings saved!');
+    const enabled = document.getElementById('toggle-enabled').classList.contains('on');
+    document.getElementById('status-dot').style.background = enabled ? '#3DD68C' : '#F5A623';
+    document.getElementById('status-text').textContent = enabled ? 'Ticket system active' : 'Ticket system disabled';
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+load();
+</script>
+<script>
+async function logoutUser(){
+  try{ await fetch(getApiBase()+"/auth/logout",{method:"POST",headers:{"X-Session-Token":getToken()}}); }catch(e){}
+  clearSession();
+}
+</script>
+</body>
+</html>

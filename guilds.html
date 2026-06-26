@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Server — Onyx</title>
+<link rel="icon" type="image/png" href="assets/images/onyx-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="assets/config.js"></script>
+<style>
+  :root{--bg:#070B14;--surface:#0E1422;--surface-2:#141B2C;--border:#212B41;--accent:#5B8DFF;--green:#3DD68C;--text:#F7F9FC;--text-muted:#94A0BD;--text-faint:#56688F;--radius:12px;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);background:rgba(7,11,20,0.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;}
+  .logo img{width:28px;height:28px;object-fit:contain;}
+  .user-pill{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:6px 14px 6px 6px;}
+  .user-pill img{width:26px;height:26px;border-radius:50%;object-fit:cover;}
+  .user-pill span{font-size:13px;font-weight:600;}
+  .logout-btn{background:none;border:none;color:var(--text-faint);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s;}
+  .logout-btn:hover{color:var(--text);}
+  .wrap{max-width:900px;margin:0 auto;padding:60px 24px;}
+  .page-head{margin-bottom:40px;}
+  .page-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px;}
+  .page-sub{color:var(--text-muted);font-size:15px;}
+  .search-wrap{position:relative;margin-bottom:28px;}
+  .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-faint);width:16px;height:16px;}
+  .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px 11px 40px;color:var(--text);font-size:14px;outline:none;transition:border-color .15s;font-family:inherit;}
+  .search-input:focus{border-color:var(--accent);}
+  .guild-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+  .guild-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;text-decoration:none;color:inherit;}
+  .guild-card:hover{border-color:var(--accent);background:var(--surface-2);transform:translateY(-2px);}
+  .guild-icon{width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:var(--accent);}
+  .guild-icon img{width:100%;height:100%;border-radius:12px;object-fit:cover;}
+  .guild-info{flex:1;min-width:0;}
+  .guild-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+  .guild-meta{font-size:12px;color:var(--text-faint);}
+  .guild-arrow{color:var(--text-faint);flex-shrink:0;}
+  .not-in-guild{border-style:dashed;opacity:0.65;}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px;}
+  .badge-bot{background:rgba(91,141,255,0.15);color:var(--accent);}
+  .badge-add{background:rgba(61,214,140,0.12);color:var(--green);}
+  .empty{text-align:center;padding:60px 24px;color:var(--text-faint);}
+  .loading{text-align:center;padding:80px 24px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <img src="assets/images/onyx-logo.png" alt="Onyx">
+    Onyx
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="user-pill">
+      <img id="user-avatar" src="" alt="">
+      <span id="user-name">Loading…</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign out</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="page-title">Select a server</div>
+    <div class="page-sub">Only servers where you have <strong>Manage Server</strong> permission are shown.</div>
+  </div>
+
+  <div class="search-wrap">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input class="search-input" type="text" id="search" placeholder="Search servers…" oninput="filterGuilds(this.value)">
+  </div>
+
+  <div id="guild-list" class="guild-grid">
+    <div class="loading">Loading your servers…</div>
+  </div>
+</div>
+
+<script>
+  const API = (window.ONYX_API_BASE || '').replace(/\/$/, '');
+  let token = null;
+  let allGuilds = [];
+
+  // Extract token from URL fragment (#token=xxx) or cookie
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  token = params.get('token');
+
+  if (token) {
+    // Store in sessionStorage and clean up URL
+    sessionStorage.setItem('onyx_token', token);
+    history.replaceState(null, '', window.location.pathname);
+  } else {
+    token = sessionStorage.getItem('onyx_token');
+  }
+
+  if (!token) {
+    window.location.href = 'index.html';
+  }
+
+  async function apiFetch(path, opts = {}) {
+    const res = await fetch(`${API}${path}`, {
+      headers: { 'X-Session-Token': token, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+      ...opts,
+    });
+    if (res.status === 401) { window.location.href = 'index.html'; return null; }
+    return res.json();
+  }
+
+  async function loadGuilds() {
+    const data = await apiFetch('/auth/me');
+    if (!data) return;
+
+    document.getElementById('user-name').textContent = data.username;
+    if (data.avatar) document.getElementById('user-avatar').src = data.avatar;
+
+    allGuilds = data.guilds || [];
+    renderGuilds(allGuilds);
+  }
+
+  function renderGuilds(guilds) {
+    const list = document.getElementById('guild-list');
+    if (!guilds.length) {
+      list.innerHTML = '<div class="empty">No servers found.</div>';
+      return;
+    }
+    list.innerHTML = guilds.map(g => {
+      const icon = g.icon
+        ? `<img src="${g.icon}" alt="${g.name}">`
+        : g.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const botBadge = g.bot_in ? `<span class="badge badge-bot">BOT IN</span>` : `<span class="badge badge-add">ADD BOT</span>`;
+      return `
+        <a class="guild-card ${g.bot_in ? '' : 'not-in-guild'}" onclick="selectGuild('${g.id}','${g.name.replace(/'/g,"\\'")}', ${g.bot_in})">
+          <div class="guild-icon">${icon}</div>
+          <div class="guild-info">
+            <div class="guild-name">${g.name}${botBadge}</div>
+            <div class="guild-meta">${g.bot_in ? 'Click to manage' : 'Bot not added yet'}</div>
+          </div>
+          <svg class="guild-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>`;
+    }).join('');
+  }
+
+  function filterGuilds(q) {
+    const filtered = allGuilds.filter(g => g.name.toLowerCase().includes(q.toLowerCase()));
+    renderGuilds(filtered);
+  }
+
+  function selectGuild(id, name, botIn) {
+    if (!botIn) {
+      const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(
+        window.ONYX_CLIENT_ID || ''
+      )}&permissions=8&scope=bot%20applications.commands&guild_id=${id}`;
+      window.open(inviteUrl, '_blank');
+      return;
+    }
+    sessionStorage.setItem('onyx_guild_id', id);
+    sessionStorage.setItem('onyx_guild_name', name);
+    window.location.href = 'dashboard.html';
+  }
+
+  async function logout() {
+    await apiFetch('/auth/logout', { method: 'POST' });
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  loadGuilds();
+</script>
+
+</body>
+</html>

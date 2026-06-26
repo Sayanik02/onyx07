@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onyx — Dashboard Login</title>
+<link rel="icon" type="image/png" href="assets/images/onyx-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="assets/config.js"></script>
+<style>
+  :root{--bg:#070B14;--surface:#0E1422;--surface-2:#141B2C;--border:#212B41;--accent:#5B8DFF;--green:#3DD68C;--text:#F7F9FC;--text-muted:#94A0BD;--text-faint:#56688F;--radius:14px;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  /* Background grid */
+  .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(91,141,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(91,141,255,0.025) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 75%);}
+
+  /* Glow blob */
+  .glow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(91,141,255,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+
+  .wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:24px;}
+  .logo-row{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:48px;}
+  .logo-mark{width:42px;height:42px;object-fit:contain;}
+  .logo-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;letter-spacing:-0.02em;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;}
+  .card-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+  .card-sub{font-size:14px;color:var(--text-muted);margin-bottom:32px;line-height:1.6;}
+
+  /* Discord OAuth button */
+  .btn-discord{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+    padding:14px 20px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer;
+    background:#5865F2;color:#fff;font-family:inherit;transition:all .15s;
+  }
+  .btn-discord:hover{background:#4752C4;transform:translateY(-2px);box-shadow:0 8px 24px rgba(88,101,242,0.35);}
+  .btn-discord svg{flex-shrink:0;}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text-faint);font-size:12px;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .features{display:flex;flex-direction:column;gap:10px;}
+  .feature{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-muted);}
+  .feature-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+
+  .error-msg{
+    background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);
+    color:#FF6B6B;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:18px;display:none;
+  }
+
+  .footer{text-align:center;margin-top:24px;font-size:12px;color:var(--text-faint);}
+  .footer a{color:var(--accent);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="glow"></div>
+
+<div class="wrap">
+  <div class="logo-row">
+    <img class="logo-mark" src="assets/images/onyx-logo.png" alt="Onyx">
+    <div class="logo-text">Onyx</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Sign in to Dashboard</div>
+    <div class="card-sub">Log in with your Discord account to manage your servers. You'll only see servers where you have <strong>Manage Server</strong> permission.</div>
+
+    <div id="error-msg" class="error-msg"></div>
+
+    <button class="btn-discord" onclick="loginWithDiscord()">
+      <svg width="22" height="16" viewBox="0 0 71 55" fill="white">
+        <path d="M60.1 4.9A58.5 58.5 0 0045.8.5a40.7 40.7 0 00-1.8 3.7 54 54 0 00-16.2 0A40.7 40.7 0 0026 .5 58.4 58.4 0 0010.9 4.9C1.6 18.7-1 32.2.3 45.5a59 59 0 0018 9.1 44 44 0 003.8-6.2 38.3 38.3 0 01-6-2.9l1.4-1.1a42.1 42.1 0 0036.1 0l1.5 1.1a38.5 38.5 0 01-6 2.9c1.1 2.2 2.4 4.3 3.8 6.2a58.8 58.8 0 0018-9.1c1.5-15.5-2.6-29-10.8-40.5zM23.7 37.4c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2c3.5 0 6.4 3.2 6.4 7.2-.1 4-2.9 7.2-6.4 7.2zm23.6 0c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2c3.6 0 6.4 3.2 6.4 7.2 0 4-2.8 7.2-6.4 7.2z"/>
+      </svg>
+      Continue with Discord
+    </button>
+
+    <div class="divider">What you can manage</div>
+
+    <div class="features">
+      <div class="feature"><span class="feature-dot"></span>Antinuke settings & whitelist</div>
+      <div class="feature"><span class="feature-dot"></span>Server backups & restore</div>
+      <div class="feature"><span class="feature-dot"></span>Ticket panel setup</div>
+      <div class="feature"><span class="feature-dot"></span>Welcome messages & auto-roles</div>
+      <div class="feature"><span class="feature-dot"></span>Premium management</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Built by <a href="https://discord.gg/hexacraft" target="_blank">Hexacraft Development</a> · <a href="#">Privacy</a>
+  </div>
+</div>
+
+<script>
+  const API = (window.ONYX_API_BASE || '').replace(/\/$/, '');
+
+  // If already logged in, skip to guild selector
+  const existingToken = sessionStorage.getItem('onyx_token');
+  if (existingToken) {
+    window.location.href = 'guilds.html';
+  }
+
+  // Show error if redirected back with ?error=
+  const urlParams = new URLSearchParams(window.location.search);
+  const error = urlParams.get('error');
+  if (error) {
+    const el = document.getElementById('error-msg');
+    el.style.display = 'block';
+    el.textContent = error === 'no_code'
+      ? 'Login was cancelled. Please try again.'
+      : 'Login failed. Check that your bot credentials are correct.';
+  }
+
+  function loginWithDiscord() {
+    // Redirect to API auth endpoint — the server handles the Discord OAuth redirect
+    window.location.href = `${API}/auth/login`;
+  }
+</script>
+
+</body>
+</html>
