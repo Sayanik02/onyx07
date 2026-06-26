@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backups — Onyx</title>
+<link rel="icon" type="image/png" href="assets/images/onyx-logo.png">
+<link rel="stylesheet" href="assets/dashboard.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark"><img src="assets/images/onyx-logo.png" alt="Onyx" style="width:100%;height:100%;object-fit:contain;"></div>
+      <div class="logo-text">Onyx</div>
+    </div>
+    <div class="server-switcher">
+      <div class="server-icon">--</div>
+      <div class="server-info">
+        <div class="server-name">Loading…</div>
+        <div class="server-meta mono" id="guild-id-display"></div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/></svg>Overview</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Protection</div>
+      <a href="antinuke.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L17 5V10C17 14 14 17.3 10 18C6 17.3 3 14 3 10V5L10 2Z" stroke="currentColor" stroke-width="1.5"/></svg>Antinuke</a>
+      <a href="backups.html" class="nav-item active"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5"/></svg>Backups</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Engagement</div>
+      <a href="tickets.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Tickets</a>
+      <a href="welcome.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3V17M3 10H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Welcome</a>
+      <a href="autoreact.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 4 2 6-5-3-5 3 2-6-5-4h6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Auto-React</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <a href="premium.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 1.5L12.5 7L18 7.8L14 11.6L15 17.5L10 14.7L5 17.5L6 11.6L2 7.8L7.5 7L10 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Premium<span class="nav-badge premium">PRO</span></a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-avatar"></div>
+      <div class="user-info"><div class="user-name">Guild Owner</div><div class="user-tag mono">Admin</div></div>
+      <button id="logout-btn" title="Switch server" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-faint);margin-left:auto;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 5l3 3-3 3M6 8h8M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="breadcrumb"><span id="breadcrumb-server">—</span> / <span class="current">Backups</span></div>
+      <div class="topbar-actions">
+        <div class="status-pill"><span class="status-dot" id="status-dot"></span> <span id="status-text">Loading…</span></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-title">Backups</div>
+        <div class="page-sub">Full server snapshots (Premium only). Restore roles, channels, and settings in minutes.</div>
+      </div>
+
+      <div class="banner" id="no-premium-banner" style="display:none;">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 1.5L12.5 7L18 7.8L14 11.6L15 17.5L10 14.7L5 17.5L6 11.6L2 7.8L7.5 7L10 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div>
+          <div class="banner-title">Premium required</div>
+          <div class="banner-desc">Backups are a Premium-only feature. <a href="premium.html" style="color:var(--red);">Upgrade your server</a> to create and restore backups.</div>
+        </div>
+      </div>
+
+      <div id="premium-content">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Create a backup</div>
+              <div class="card-desc">Use the bot command <span class="mono" style="color:var(--red);">&gt;backup create</span> to snapshot your server. Backups appear here automatically.</div>
+            </div>
+          </div>
+          <div class="field-hint" style="margin-top:4px;">Backups capture roles, channels, permissions, emojis, and server settings.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Scheduled backups</div>
+              <div class="card-desc">Automatically snapshot this server on a set interval.</div>
+            </div>
+            <div class="toggle" id="toggle-schedule" onclick="toggleSchedule()"></div>
+          </div>
+          <div id="schedule-form">
+            <div class="field">
+              <label class="field-label">Frequency</label>
+              <select class="field-select" id="schedule-interval">
+                <option value="6">Every 6 hours</option>
+                <option value="12" selected>Every 12 hours</option>
+                <option value="24">Daily</option>
+                <option value="168">Weekly</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveSchedule()">Save schedule</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Backup history</div>
+              <div class="card-desc">Up to 10 backups are kept per server. Restore using the bot command <span class="mono" style="color:var(--red);">&gt;backup load &lt;ID&gt;</span></div>
+            </div>
+          </div>
+          <table class="table">
+            <thead><tr><th>Backup ID</th><th>Created</th><th>Contents</th><th></th></tr></thead>
+            <tbody id="backup-tbody">
+              <tr><td colspan="4" style="color:var(--text-faint);text-align:center;padding:24px;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+<script>
+if (!requireGuild()) throw new Error('no guild');
+document.getElementById('guild-id-display').textContent = getGuildId();
+document.getElementById('breadcrumb-server').textContent = getGuildName();
+
+function toggleSchedule() {
+  document.getElementById('toggle-schedule').classList.toggle('on');
+}
+
+async function load() {
+  try {
+    const data = await api('/backups');
+
+    if (!data.isPremium) {
+      document.getElementById('no-premium-banner').style.display = 'flex';
+      document.getElementById('premium-content').style.opacity = '0.4';
+      document.getElementById('premium-content').style.pointerEvents = 'none';
+      document.getElementById('status-text').textContent = 'Premium required';
+      document.getElementById('status-dot').style.background = '#F5A623';
+    } else {
+      document.getElementById('status-dot').style.background = '#3DD68C';
+      document.getElementById('status-text').textContent = 'Auto-backup ' + (data.schedule.enabled ? 'enabled' : 'disabled');
+    }
+
+    if (data.schedule.enabled) {
+      document.getElementById('toggle-schedule').classList.add('on');
+      document.getElementById('schedule-interval').value = String(data.schedule.intervalH);
+    }
+
+    renderBackups(data.backups);
+  } catch(e) {
+    document.getElementById('status-text').textContent = 'Could not load';
+    document.getElementById('status-dot').style.background = '#FF6B6B';
+  }
+}
+
+function renderBackups(list) {
+  const tbody = document.getElementById('backup-tbody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-faint);text-align:center;padding:24px;">No backups yet. Use <code style="color:var(--red);">&gt;backup create</code> in your server.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(b => `
+    <tr>
+      <td class="mono">${b.backupId}</td>
+      <td class="mono" style="color:var(--text-faint);">${b.createdAt}</td>
+      <td>${b.roles} roles · ${b.channels} channels · ${b.emojis} emojis</td>
+      <td style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="deleteBackup('${b.backupId}')">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveSchedule() {
+  try {
+    const enabled = document.getElementById('toggle-schedule').classList.contains('on');
+    const intervalH = parseInt(document.getElementById('schedule-interval').value);
+    await api('/backups/schedule', { method: 'POST', body: { enabled, intervalH, maxKeep: 10 } });
+    toast('Schedule saved!');
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+async function deleteBackup(id) {
+  if (!confirm('Delete backup ' + id + '? This cannot be undone.')) return;
+  try {
+    await api(`/backups/${id}`, { method: 'DELETE' });
+    toast('Backup deleted.');
+    load();
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+load();
+</script>
+<script>
+async function logoutUser(){
+  try{ await fetch(getApiBase()+"/auth/logout",{method:"POST",headers:{"X-Session-Token":getToken()}}); }catch(e){}
+  clearSession();
+}
+</script>
+</body>
+</html>

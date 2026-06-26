@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome — Onyx</title>
+<link rel="icon" type="image/png" href="assets/images/onyx-logo.png">
+<link rel="stylesheet" href="assets/dashboard.css">
+<style>
+  .preview-card{background:#36393F;border-radius:var(--radius);padding:16px;}
+  .preview-embed{background:#2B2D31;border-left:4px solid var(--red);border-radius:4px;padding:14px 16px;max-width:420px;}
+  .preview-embed-author{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#fff;margin-bottom:6px;}
+  .preview-embed-avatar{width:20px;height:20px;border-radius:50%;background:var(--surface-3);}
+  .preview-embed-desc{font-size:13px;color:#DBDEE1;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark"><img src="assets/images/onyx-logo.png" alt="Onyx" style="width:100%;height:100%;object-fit:contain;"></div>
+      <div class="logo-text">Onyx</div>
+    </div>
+    <div class="server-switcher">
+      <div class="server-icon">--</div>
+      <div class="server-info">
+        <div class="server-name">Loading…</div>
+        <div class="server-meta mono" id="guild-id-display"></div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke="currentColor" stroke-width="1.5"/></svg>Overview</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Protection</div>
+      <a href="antinuke.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L17 5V10C17 14 14 17.3 10 18C6 17.3 3 14 3 10V5L10 2Z" stroke="currentColor" stroke-width="1.5"/></svg>Antinuke</a>
+      <a href="backups.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5"/></svg>Backups</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Engagement</div>
+      <a href="tickets.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14M3 10h14M3 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Tickets</a>
+      <a href="welcome.html" class="nav-item active"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3V17M3 10H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Welcome</a>
+      <a href="autoreact.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 4 2 6-5-3-5 3 2-6-5-4h6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Auto-React</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <a href="premium.html" class="nav-item"><svg viewBox="0 0 20 20" fill="none"><path d="M10 1.5L12.5 7L18 7.8L14 11.6L15 17.5L10 14.7L5 17.5L6 11.6L2 7.8L7.5 7L10 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Premium<span class="nav-badge premium">PRO</span></a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-avatar"></div>
+      <div class="user-info"><div class="user-name">Guild Owner</div><div class="user-tag mono">Admin</div></div>
+      <button id="logout-btn" title="Switch server" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text-faint);margin-left:auto;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11 5l3 3-3 3M6 8h8M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="breadcrumb"><span id="breadcrumb-server">—</span> / <span class="current">Welcome</span></div>
+      <div class="topbar-actions">
+        <div class="status-pill"><span class="status-dot" id="status-dot"></span> <span id="status-text">Loading…</span></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-title">Welcome flow</div>
+        <div class="page-sub">What new members see when they join, and what gets DM'd to them.</div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Channel message</div>
+                <div class="card-desc">Posted publicly when someone joins.</div>
+              </div>
+              <div class="toggle" id="toggle-enabled" onclick="this.classList.toggle('on');updatePreview();"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Channel ID</label>
+              <input class="field-input" id="channel-id" placeholder="Channel ID (e.g. 123456789)">
+            </div>
+            <div class="field">
+              <label class="field-label">Message</label>
+              <textarea class="field-textarea" id="welcome-msg" oninput="updatePreview()">Welcome {user} to **{server}**! You're member #{membercount}.</textarea>
+              <div class="field-hint">Variables: {user} {server} {membercount} {inviter} {invite_code}</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Join DM</div>
+                <div class="card-desc">Sent privately to the new member.</div>
+              </div>
+              <div class="toggle" id="toggle-dm" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">DM Message</label>
+              <textarea class="field-textarea" id="dm-msg">Thanks for joining {server}! Check out #rules to get started.</textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Goodbye message</div>
+                <div class="card-desc">Posted when a member leaves.</div>
+              </div>
+              <div class="toggle" id="toggle-goodbye" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Goodbye Channel ID</label>
+              <input class="field-input" id="goodbye-channel" placeholder="Channel ID">
+            </div>
+            <div class="field">
+              <label class="field-label">Goodbye Message</label>
+              <textarea class="field-textarea" id="goodbye-msg">Goodbye {user}, we'll miss you!</textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="save()">Save welcome settings</button>
+        </div>
+
+        <div>
+          <div class="card" style="position:sticky;top:84px;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Live preview</div>
+                <div class="card-desc">Updates as you type.</div>
+              </div>
+            </div>
+            <div class="preview-card">
+              <div class="preview-embed">
+                <div class="preview-embed-author">
+                  <div class="preview-embed-avatar"></div>
+                  Member Joined
+                </div>
+                <div class="preview-embed-desc" id="preview-text">Welcome <strong>SomeNewMember</strong> to <strong>Your Server</strong>! You're member #1.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+<script>
+if (!requireGuild()) throw new Error('no guild');
+document.getElementById('guild-id-display').textContent = getGuildId();
+document.getElementById('breadcrumb-server').textContent = getGuildName();
+
+function updatePreview() {
+  let msg = document.getElementById('welcome-msg').value;
+  msg = msg.replace('{user}', '<strong>SomeNewMember</strong>')
+           .replace('{server}', '<strong>' + getGuildName() + '</strong>')
+           .replace('{membercount}', '1,234')
+           .replace('{inviter}', '<strong>mod_sarah</strong>')
+           .replace('{invite_code}', 'abc123');
+  document.getElementById('preview-text').innerHTML = msg;
+}
+
+async function load() {
+  try {
+    const cfg = await api('/welcome');
+    if (cfg.enabled) document.getElementById('toggle-enabled').classList.add('on');
+    if (cfg.dmEnabled) document.getElementById('toggle-dm').classList.add('on');
+    if (cfg.goodbyeEnabled) document.getElementById('toggle-goodbye').classList.add('on');
+    document.getElementById('channel-id').value = cfg.channelId || '';
+    document.getElementById('welcome-msg').value = cfg.message || '';
+    document.getElementById('dm-msg').value = cfg.dmMessage || '';
+    document.getElementById('goodbye-channel').value = cfg.goodbyeChannel || '';
+    document.getElementById('goodbye-msg').value = cfg.goodbyeMessage || '';
+    updatePreview();
+
+    document.getElementById('status-dot').style.background = cfg.enabled ? '#3DD68C' : '#F5A623';
+    document.getElementById('status-text').textContent = cfg.enabled ? 'Welcome active' : 'Welcome disabled';
+  } catch(e) {
+    document.getElementById('status-text').textContent = 'Could not load';
+    document.getElementById('status-dot').style.background = '#FF6B6B';
+  }
+}
+
+async function save() {
+  try {
+    await api('/welcome', {
+      method: 'POST',
+      body: {
+        enabled: document.getElementById('toggle-enabled').classList.contains('on'),
+        channelId: document.getElementById('channel-id').value,
+        message: document.getElementById('welcome-msg').value,
+        embedEnabled: true,
+        dmEnabled: document.getElementById('toggle-dm').classList.contains('on'),
+        dmMessage: document.getElementById('dm-msg').value,
+        goodbyeEnabled: document.getElementById('toggle-goodbye').classList.contains('on'),
+        goodbyeChannel: document.getElementById('goodbye-channel').value,
+        goodbyeMessage: document.getElementById('goodbye-msg').value,
+      }
+    });
+    toast('Welcome settings saved!');
+    const enabled = document.getElementById('toggle-enabled').classList.contains('on');
+    document.getElementById('status-dot').style.background = enabled ? '#3DD68C' : '#F5A623';
+    document.getElementById('status-text').textContent = enabled ? 'Welcome active' : 'Welcome disabled';
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
+load();
+</script>
+<script>
+async function logoutUser(){
+  try{ await fetch(getApiBase()+"/auth/logout",{method:"POST",headers:{"X-Session-Token":getToken()}}); }catch(e){}
+  clearSession();
+}
+</script>
+</body>
+</html>
