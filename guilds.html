@@ -130,7 +130,7 @@
         : g.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
       const botBadge = g.bot_in ? `<span class="badge badge-bot">BOT IN</span>` : `<span class="badge badge-add">ADD BOT</span>`;
       return `
-        <a class="guild-card ${g.bot_in ? '' : 'not-in-guild'}" onclick="selectGuild('${g.id}','${g.name.replace(/'/g,"\\'")}', ${g.bot_in})">
+        <a class="guild-card ${g.bot_in ? '' : 'not-in-guild'}" onclick="selectGuild('${g.id}','${g.name.replace(/'/g,"\\'")}', ${g.bot_in}, '${g.icon || ''}' )">
           <div class="guild-icon">${icon}</div>
           <div class="guild-info">
             <div class="guild-name">${g.name}${botBadge}</div>
@@ -146,7 +146,7 @@
     renderGuilds(filtered);
   }
 
-  function selectGuild(id, name, botIn) {
+  function selectGuild(id, name, botIn, icon) {
     if (!botIn) {
       const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(
         window.ONYX_CLIENT_ID || ''
@@ -156,6 +156,7 @@
     }
     sessionStorage.setItem('onyx_guild_id', id);
     sessionStorage.setItem('onyx_guild_name', name);
+    sessionStorage.setItem('onyx_guild_icon', icon || '');
     window.location.href = 'dashboard.html';
   }
 
