@@ -1,10 +1,11 @@
 /* ────────────────────────────────────────────────────────────
-   Onyx Dashboard — shared JS  v3  (Discord OAuth)
+   Onyx Dashboard — shared JS  v4  (Discord OAuth)
    Requires assets/config.js loaded before this file.
 ──────────────────────────────────────────────────────────── */
 
 const GUILD_KEY      = 'onyx_guild_id';
 const GUILD_NAME_KEY = 'onyx_guild_name';
+const GUILD_ICON_KEY = 'onyx_guild_icon';
 const TOKEN_KEY      = 'onyx_token';
 
 function getApiBase() {
@@ -14,6 +15,15 @@ function getApiBase() {
 function getToken()     { return sessionStorage.getItem(TOKEN_KEY); }
 function getGuildId()   { return sessionStorage.getItem(GUILD_KEY); }
 function getGuildName() { return sessionStorage.getItem(GUILD_NAME_KEY) || 'Your Server'; }
+function getGuildIcon() { return sessionStorage.getItem(GUILD_ICON_KEY) || ''; }
+
+/* Clear only guild selection → back to server picker */
+function clearGuild() {
+  sessionStorage.removeItem(GUILD_KEY);
+  sessionStorage.removeItem(GUILD_NAME_KEY);
+  sessionStorage.removeItem(GUILD_ICON_KEY);
+  window.location.href = 'guilds.html';
+}
 
 function clearSession() {
   sessionStorage.clear();
@@ -72,11 +82,36 @@ function initToggle(el, onFn) {
 /* Fill server info in sidebar */
 function fillSidebarGuild() {
   const name   = getGuildName();
+  const icon   = getGuildIcon();
   const nameEl = document.querySelector('.server-name');
   const iconEl = document.querySelector('.server-icon');
-  if (nameEl) nameEl.textContent = name;
-  if (iconEl) iconEl.textContent = name.slice(0, 2).toUpperCase();
 
+  if (nameEl) nameEl.textContent = name;
+
+  if (iconEl) {
+    if (icon) {
+      /* Show the real Discord guild icon */
+      iconEl.innerHTML = '';
+      const img = document.createElement('img');
+      img.src   = icon;
+      img.alt   = name;
+      img.style.cssText = 'width:100%;height:100%;border-radius:8px;object-fit:cover;';
+      img.onerror = () => { iconEl.innerHTML = ''; iconEl.textContent = name.slice(0, 2).toUpperCase(); };
+      iconEl.appendChild(img);
+    } else {
+      iconEl.textContent = name.slice(0, 2).toUpperCase();
+    }
+  }
+
+  /* Make the whole server-switcher block clickable to go back to server picker */
+  const switcher = document.querySelector('.server-switcher');
+  if (switcher) {
+    switcher.style.cursor  = 'pointer';
+    switcher.title         = 'Switch server';
+    switcher.addEventListener('click', clearGuild);
+  }
+
+  /* Logout button — full sign-out */
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) logoutBtn.addEventListener('click', clearSession);
 }
